@@ -17,8 +17,12 @@ from ctypes import windll, Structure, c_long, byref
 #INITIALIZE SOME VALUES---------------------------------------------------------------------
 screenWidth, screenHeight = pyautogui.size()
 global quad
+quad=0
+
 not3=0
 press=0
+
+global runningg
 runningg=True
 
 team=0 #Team= 0 if blue team otherwise red team is 1
@@ -35,22 +39,24 @@ Asplit=3
 SLEEP_TIME=1
 pyautogui.click(100,100)
 FIND_FOOD_LIMIT=4
+
+global coorden
+
+global enemy
 enemy=red_team
+
+global PANIC_MODE
 PANIC_MODE=False
+
+global TIME_MOVE
 TIME_MOVE=0.1
+
+global TEST_MODE
+TEST_MODE=True
 
 #USER PLEASE GIVE ALL INITIALIZATIONS HERE-------------------------------------------------
 
-"""
-#TEST VALUES
-BROWSER_SCREEN_WIDTH=800 #800
-BRWOSER_SCREEN_HEIGHT=720 #720
-OFFSETX=0
-OFFSETY=0
-CENTER_X=776/2
-CENTER_Y=410
 
-"""
 #NO TEST VALUES
 BROWSER_SCREEN_WIDTH=screenWidth #800
 BRWOSER_SCREEN_HEIGHT=screenHeight #720
@@ -59,6 +65,15 @@ OFFSETY=0
 CENTER_X=BROWSER_SCREEN_WIDTH/2 #776/2 or 388
 CENTER_Y=BRWOSER_SCREEN_HEIGHT/2 #410 or 392
 
+
+#TEST VALUES
+if(TEST_MODE==True):
+	BROWSER_SCREEN_WIDTH=800 #800
+	BRWOSER_SCREEN_HEIGHT=650#720
+	OFFSETX=0
+	OFFSETY=0
+	CENTER_X=776/2
+	CENTER_Y=410
 
 
 
@@ -163,6 +178,9 @@ if(screenWidth>1000):
 	Asplit=4
 #PROGRAM---------------------------------------------------------------------------------------
 def getBox():
+	global enemy
+	global runningg
+	global coorden
 	while(True):
 	
 		#GRAB SCREEN
@@ -178,12 +196,17 @@ def getBox():
 		fmask1 = cv2.add(mask1,mask2)
 		mask = cv2.add(fmask1,mask3)
 		
-		#SHOW OUTPUT,UNCOMMENT THIS TO ENABLE IT
-		#cv2.imshow('mask',mask)
-		global coord
 		#FIND CORDINATES OF ALL FOOD AND ENEMIES
+		global coord
 		coord=cv2.findNonZero(mask)
 		
+		panicmask=cv2.inRange(hsv, enemy, enemy) 
+		coorden=cv2.findNonZero(panicmask)
+		
+		
+		#SHOW OUTPUT,UNCOMMENT THIS TO ENABLE IT
+		if(TEST_MODE==True):
+			cv2.imshow('mask',panicmask)
 		
 		
 		if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -191,9 +214,11 @@ def getBox():
 			break
 			
 def Calcpos():
-	quad=1
+	global quad
 	not2=0
 	global TIME_MOVE
+	global PANIC_MODE
+	
 	while(runningg):
 		print("\n-------\n")
 		next=0
@@ -203,6 +228,16 @@ def Calcpos():
 		Asplit2=Asplit
 		try:
 		
+			try:
+				firstps=coorden[0].astype(int)
+				PANIC_MODE=True
+				print("PANIC MODE!! RUNNING AWAY FROM ENEMY")
+					
+			except Exception as EE:
+				print(EE)
+				firstps=coord[0].astype(int)
+				PANIC_MODE=False
+				
 			#Extract food cordinate value
 			firstps=coord[0].astype(int)
 			print("Cordinates needed: {0}".format(firstps))
@@ -231,24 +266,46 @@ def Calcpos():
 			
 			global quad
 			#Get last square found quadrant location
-			if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
-				quad=5
-			elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS LEFT
-				quad=6
-			elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #FOOD IS DOWN
-				quad=7
-			elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS RIGHT
-				quad=8
-			elif(xx>CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP RIGHT
-				quad=1
-			elif(xx<CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP LEFY
-				quad=2
-			elif(xx<CENTER_X and yy>CENTER_Y):								 #FOOD IS DOWN LEFT
-				quad=3
-			else:								 							 #FOOD IS DOWN RIGHT
-				quad=4
+			if(PANIC_MODE):
+				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
+					quad=7
+				elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS LEFT
+					quad=8
+				elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #FOOD IS DOWN
+					quad=5
+				elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS RIGHT
+					quad=6
+				elif(xx>CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP RIGHT
+					quad=3
+				elif(xx<CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP LEFY
+					quad=4
+				elif(xx<CENTER_X and yy>CENTER_Y):								 #FOOD IS DOWN LEFT
+					quad=1
+				else:								 							 #FOOD IS DOWN RIGHT
+					quad=2
+					
+			else:
+				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
+					quad=5
+				elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS LEFT
+					quad=6
+				elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #FOOD IS DOWN
+					quad=7
+				elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS RIGHT
+					quad=8
+				elif(xx>CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP RIGHT
+					quad=1
+				elif(xx<CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP LEFY
+					quad=2
+				elif(xx<CENTER_X and yy>CENTER_Y):								 #FOOD IS DOWN LEFT
+					quad=3
+				else:								 							 #FOOD IS DOWN RIGHT
+					quad=4
 			print("Found in quadrant {0}".format(quad))
 			
+			if(PANIC_MODE==True):
+				TIME_MOVE=0.5
+				moveQuad
 			
 		except Exception as e: 
 		
@@ -258,15 +315,17 @@ def Calcpos():
 				
 			#Since no food is found,move to random location
 			if(not2>FIND_FOOD_LIMIT):
-				quad=random.randint(1, 8)
+				if(PANIC_MODE==False):
+					quad=random.randint(1, 8)
+					TIME_MOVE=1
+				else:
+					TIME_MOVE=0.5
 				not2=0
-			
 			
 				
 			#MOVE TO NEAREST FOOD QUADRANT
-			TIME_MOVE=1
+			
 			moveQuad()
-
 			
 			
 if __name__ == '__main__':
