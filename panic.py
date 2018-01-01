@@ -31,10 +31,9 @@ squares = np.array([95, 150, 255], dtype=np.uint8) #Squares --- RGB=255,232,105
 polygon = np.array([5, 136, 252], dtype=np.uint8) #Polygons --- RGB-118 141 252
 red_team = np.array([121, 172, 241], dtype=np.uint8) #Red Players --- RGB-241,78,84
 blue_team = np.array([24, 255, 225], dtype=np.uint8) #Blue players --- RGB-0,178,225
+patrol = np.array([145, 129, 241], dtype=np.uint8) #RGB-241 119 221
 
 OFFSET=60
-MOUSE_OFFSET_X=0
-MOUSE_OFFSET_Y=0
 Asplit=3
 SLEEP_TIME=1
 pyautogui.click(100,100)
@@ -52,7 +51,7 @@ global TIME_MOVE
 TIME_MOVE=0.1
 
 global TEST_MODE
-TEST_MODE=True
+TEST_MODE=False
 
 #USER PLEASE GIVE ALL INITIALIZATIONS HERE-------------------------------------------------
 
@@ -60,10 +59,10 @@ TEST_MODE=True
 #NO TEST VALUES
 BROWSER_SCREEN_WIDTH=screenWidth #800
 BRWOSER_SCREEN_HEIGHT=screenHeight #720
-OFFSETX=0
+OFFSETX=28
 OFFSETY=0
-CENTER_X=BROWSER_SCREEN_WIDTH/2 #776/2 or 388
-CENTER_Y=BRWOSER_SCREEN_HEIGHT/2 #410 or 392
+CENTER_X=(BROWSER_SCREEN_WIDTH/2)-(OFFSETX/2) #776/2 or 388
+CENTER_Y=(BRWOSER_SCREEN_HEIGHT/2)-(OFFSETY/2) #410 or 392
 
 
 #TEST VALUES
@@ -200,8 +199,11 @@ def getBox():
 		global coord
 		coord=cv2.findNonZero(mask)
 		
+		patrolMask = cv2.inRange(hsv, patrol, patrol) 
 		panicmask=cv2.inRange(hsv, enemy, enemy) 
-		coorden=cv2.findNonZero(panicmask)
+		
+		fmask2 = cv2.add(patrolMask,panicmask)
+		coorden=cv2.findNonZero(fmask2)
 		
 		
 		#SHOW OUTPUT,UNCOMMENT THIS TO ENABLE IT
@@ -234,7 +236,6 @@ def Calcpos():
 				print("PANIC MODE!! RUNNING AWAY FROM ENEMY")
 					
 			except Exception as EE:
-				print(EE)
 				firstps=coord[0].astype(int)
 				PANIC_MODE=False
 				
@@ -255,7 +256,7 @@ def Calcpos():
 			
 			#Print coordinates to terminal
 			print("Cordinates we get: {0},{1}".format(xx,yy))
-			pyautogui.moveTo(xx+MOUSE_OFFSET_X, yy+MOUSE_OFFSET_Y)
+			pyautogui.moveTo(xx+OFFSETX, yy+OFFSETY)
 			pos = queryMousePosition()
 			print("Mouse position moved: {0}".format(pos))
 			#time.sleep(2)
@@ -267,22 +268,22 @@ def Calcpos():
 			global quad
 			#Get last square found quadrant location
 			if(PANIC_MODE):
-				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
+				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS ABOVE
 					quad=7
-				elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS LEFT
+				elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS LEFT
 					quad=8
-				elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #FOOD IS DOWN
+				elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #ENEMY IS DOWN
 					quad=5
-				elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS RIGHT
+				elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS RIGHT
 					quad=6
-				elif(xx>CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP RIGHT
-					quad=3
-				elif(xx<CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP LEFY
-					quad=4
-				elif(xx<CENTER_X and yy>CENTER_Y):								 #FOOD IS DOWN LEFT
-					quad=1
-				else:								 							 #FOOD IS DOWN RIGHT
-					quad=2
+				elif(xx>CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP RIGHT
+					quad=8
+				elif(xx<CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP LEFY
+					quad=6
+				elif(xx<CENTER_X and yy>CENTER_Y):								 #ENEMY IS DOWN LEFT
+					quad=6
+				else:								 							 #ENEMY IS DOWN RIGHT
+					quad=8
 					
 			else:
 				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
@@ -303,10 +304,15 @@ def Calcpos():
 					quad=4
 			print("Found in quadrant {0}".format(quad))
 			
-			if(PANIC_MODE==True):
-				TIME_MOVE=0.5
-				moveQuad
 			
+			if(PANIC_MODE==True):
+				TIME_MOVE=1
+				moveQuad()
+			else:
+				TIME_MOVE=0.2
+				Thread(target = moveQuad).start()
+				
+				
 		except Exception as e: 
 		
 			#NO FOOD FOUND

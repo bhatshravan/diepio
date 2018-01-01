@@ -33,7 +33,7 @@ def queryMousePosition():
     print(pyautogui.pixel(pt.x, pt.y))
     return { "x": pt.x, "y": pt.y}
 
-green = np.uint8([[[0,178,225 ]]])
+green = np.uint8([[[241,119,221 ]]])
 hsv_green = cv2.cvtColor(green,cv2.COLOR_BGR2HSV)
 print(hsv_green)
 
