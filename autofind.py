@@ -95,74 +95,6 @@ def replace_str_index(text,index=0,replacement=''):
     return '%s%s%s'%(text[:index],replacement,text[index+1:])
 	
 
-def moveQuad():
-	quadpos=quad
-	print("In moveQuad , quadrant is {0}".format(quadpos))
-	if(quadpos==1):
-		print("Moving up right")
-		pyautogui.keyDown('right')
-		pyautogui.keyDown('up')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('right')
-		pyautogui.keyUp('up')
-		press=0
-		
-	elif(quadpos==2):
-		print("Moving up left")
-		pyautogui.keyDown('left')
-		pyautogui.keyDown('up')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('left')
-		pyautogui.keyUp('up')
-		press=0
-		
-	elif(quadpos==3):
-		print("Moving down left")
-		pyautogui.keyDown('left')
-		pyautogui.keyDown('down')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('left')
-		pyautogui.keyUp('down')
-		press=0
-		
-	elif(quadpos==4):
-		print("Moving down right")
-		pyautogui.keyDown('right')
-		pyautogui.keyDown('down')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('right')
-		pyautogui.keyUp('down')
-		press=0
-		
-	elif(quadpos==5):
-		print("Moving up")
-		pyautogui.keyDown('up')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('up')
-		press=0
-		
-	elif(quadpos==6):
-		print("Moving left")
-		pyautogui.keyDown('left')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('left')
-		press=0
-		
-	elif(quadpos==7):
-		print("Moving down")
-		pyautogui.keyDown('down')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('down')
-		press=0
-		
-	else:
-		print("Moving right")
-		pyautogui.keyDown('right')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('right')
-		press=0
-	
-
 
 	
 	
@@ -220,19 +152,7 @@ def getBox():
 		
 		fmask2 = cv2.add(patrolMask,panicmask)
 		coorden=cv2.findNonZero(fmask2)
-		
-		#FIND BACKGROUND MASKS
-		bgmask = cv2.inRange(hsv, border, border) 
-		coordborder =cv2.findNonZero(bgmask)
-		
-		#SHOW OUTPUT,UNCOMMENT THIS TO ENABLE IT
-		finalmask=cv2.add(fmask1,fmask2)
-		if(TEST_MODE==True):
-			mm=cv2.add(fmask1,fmask2)
-			mm2=cv2.add(mm,bgmask)
-			cv2.imshow('mask',mm2)
-		
-		
+			
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			runningg=False
 			break
@@ -261,30 +181,10 @@ def Calcpos():
 			coordborderlen=0
 			
 		if coorden is not None:
-			"""
-			nearest_index2=0
-			try:
-				distances2 = np.sqrt((coord[:,:,0] - TARGET[0]) ** 2 + (coord[:,:,1] - TARGET[1]) ** 2)
-				nearest_index2 = np.argmin(distances2)
-			except:
-				nearest_index=0
-			"""
 			firstps=coorden[0].astype(int)
 			PANIC_MODE=True
 			print("PANIC MODE!! RUNNING AWAY FROM ENEMY")
 					
-		elif(iter>3 and coordborderlen>NEAR_BORDER_LIMIT):
-			nearest_index=0
-			try:
-				distances = np.sqrt((coord[:,:,0] - TARGET[0]) ** 2 + (coord[:,:,1] - TARGET[1]) ** 2)
-				nearest_index = np.argmin(distances)
-			except:
-				nearest_index=0
-			firstps=coordborder[nearest_index].astype(int)
-			BORDER_FOUND=True
-			print("NEAR BORDER!! MOVING AWAY FROM THIS!!")
-			iter=0
-			PANIC_MODE=False
 			
 		elif coord is not None:
 			nearest_index=0
@@ -297,22 +197,7 @@ def Calcpos():
 			PANIC_MODE=False
 			
 		else:
-			LAST_FOOD_FOUND=LAST_FOOD_FOUND+1
-			print("No FOOD,Last found in quadrant {0}".format(quad))
-				
-			#Since no food is found,move to random location
-			if(LAST_FOOD_FOUND>FIND_FOOD_LIMIT):
-				if(PANIC_MODE==False):
-					quad=random.randint(1, 8)
-					TIME_MOVE=1
-					print("Moving random initiated to {0}",quad)
-					
-				else:
-					TIME_MOVE=0.5
-				LAST_FOOD_FOUND=0
-				
-			#MOVE TO NEAREST FOOD QUADRANT	
-			moveQuad()
+			print("No FOOD")
 			continue
 		
 		print("Cordinates needed: {0}".format(firstps))
@@ -337,84 +222,9 @@ def Calcpos():
 			
 		#Print coordinates to terminal
 		#print("Cordinates we get: {0},{1}".format(xx,yy))
-		if(not BORDER_FOUND):
+		if(not PANIC_MODE):
 			pyautogui.moveTo(xx+OFFSETX, yy+OFFSETY)
 		
-		#pos = queryMousePosition()
-		
-		#print("Mouse position moved: {0}".format(pos))
-		
-		#time.sleep(2)
-		
-		
-		#Square is found
-		LAST_FOOD_FOUND=0
-		
-		#Get last square found quadrant location
-		if(PANIC_MODE or BORDER_FOUND):
-			if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS ABOVE
-				quad=7
-			elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS LEFT
-				quad=8
-			elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #ENEMY IS DOWN
-				quad=5
-			elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS RIGHT
-				quad=6
-			elif(xx>CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP RIGHT
-				quad=6
-			elif(xx<CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP LEFT
-				quad=8
-			elif(xx<CENTER_X and yy>CENTER_Y):								 #ENEMY IS DOWN LEFT
-				quad=8
-			else:								 							 #ENEMY IS DOWN RIGHT
-				quad=6
-				
-			"""elif(BORDER_FOUND):
-			if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS ABOVE
-				quad=7
-			elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS LEFT
-				quad=8
-			elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS DOWN
-				quad=5
-			else: #ENEMY IS RIGHT
-				quad=6
-			"""
-		else:
-			if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
-				quad=5
-			elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS LEFT
-				quad=6
-			elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #FOOD IS DOWN
-				quad=7
-			elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS RIGHT
-				quad=8
-			elif(xx>CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP RIGHT
-				quad=1
-			elif(xx<CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP LEFY
-				quad=2
-			elif(xx<CENTER_X and yy>CENTER_Y):								 #FOOD IS DOWN LEFT
-				quad=3
-			else:								 							 #FOOD IS DOWN RIGHT
-				quad=4
-		print("Found in quadrant {0}".format(quad))
-			
-			
-		if(PANIC_MODE==True):
-			TIME_MOVE=1
-			moveQuad()
-		elif(BORDER_FOUND):
-			if(quad==5 or quad==7):
-				TIME_MOVE=2
-			else:
-				TIME_MOVE=2
-			Thread(target = moveQuad).start()
-			BORDER_FOUND=False
-		else:
-			if(xx<CENTER_X+FOOD_NEAR_OFFSET and xx>CENTER_X-FOOD_NEAR_OFFSET and yy<CENTER_Y+FOOD_NEAR_OFFSET and yy>CENTER_Y-FOOD_NEAR_OFFSET):
-				print("Close,not moving")
-			else:
-				TIME_MOVE=0.1
-				Thread(target = moveQuad).start()
 			
 		
 			
