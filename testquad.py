@@ -54,7 +54,7 @@ global TIME_MOVE
 TIME_MOVE=0.1
 
 global TEST_MODE
-TEST_MODE=False
+TEST_MODE=True
 
 global BORDER_FOUND
 BORDER_FOUND=False
@@ -65,7 +65,7 @@ BORDER_FOUND=False
 BROWSER_SCREEN_WIDTH=screenWidth #800
 BRWOSER_SCREEN_HEIGHT=screenHeight #720
 OFFSETX=0
-OFFSETY=0
+OFFSETY=99
 CENTER_X=(BROWSER_SCREEN_WIDTH/2)-(OFFSETX/2) #776/2 or 388
 CENTER_Y=(BRWOSER_SCREEN_HEIGHT/2)-(OFFSETY/2) #410 or 392
 
@@ -97,67 +97,27 @@ def moveQuad():
 	quadpos=quad
 	if(quadpos==1):
 		print("Moving up right")
-		pyautogui.keyDown('right')
-		pyautogui.keyDown('up')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('right')
-		pyautogui.keyUp('up')
-		press=0
 		
 	elif(quadpos==2):
 		print("Moving up left")
-		pyautogui.keyDown('left')
-		pyautogui.keyDown('up')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('left')
-		pyautogui.keyUp('up')
-		press=0
 		
 	elif(quadpos==3):
 		print("Moving down left")
-		pyautogui.keyDown('left')
-		pyautogui.keyDown('down')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('left')
-		pyautogui.keyUp('down')
-		press=0
 		
 	elif(quadpos==4):
 		print("Moving down right")
-		pyautogui.keyDown('right')
-		pyautogui.keyDown('down')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('right')
-		pyautogui.keyUp('down')
-		press=0
 		
 	elif(quadpos==5):
 		print("Moving up")
-		pyautogui.keyDown('up')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('up')
-		press=0
 		
 	elif(quadpos==6):
 		print("Moving left")
-		pyautogui.keyDown('left')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('left')
-		press=0
 		
 	elif(quadpos==7):
 		print("Moving down")
-		pyautogui.keyDown('down')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('down')
-		press=0
 		
 	else:
 		print("Moving right")
-		pyautogui.keyDown('right')
-		time.sleep(TIME_MOVE)
-		pyautogui.keyUp('right')
-		press=0
 	
 
 
@@ -221,7 +181,7 @@ def getBox():
 		#SHOW OUTPUT,UNCOMMENT THIS TO ENABLE IT
 		finalmask=cv2.add(fmask1,fmask2)
 		if(TEST_MODE==True):
-			cv2.imshow('mask',mask)
+			cv2.imshow('mask',fmask2)
 		
 		
 		if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -254,11 +214,12 @@ def Calcpos():
 			except Exception as EE:
 				if(iter>10):
 					try:
-						firstps=coordborder[0].astype(int)
-						if(len(coordborder)>3000):
-							BORDER_FOUND=True
-							print("NEAR BORDER!! MOVING AWAY FROM THIS!!")
+						firstps=coordborder[10].astype(int)
+						print(len(coordborder))
+						BORDER_FOUND=True
+						print("NEAR BORDER!! MOVING AWAY FROM THIS!!")
 					except:
+						BORDER_FOUND=False
 						firstps=coord[0].astype(int)
 					iter=0
 				else:
@@ -339,11 +300,13 @@ def Calcpos():
 				else:								 							 #FOOD IS DOWN RIGHT
 					quad=4
 			print("Found in quadrant {0}".format(quad))
+			print(BORDER_FOUND)
 			
 			
 			if(PANIC_MODE==True):
 				TIME_MOVE=1
 				moveQuad()
+				time.sleep(1)
 			elif(BORDER_FOUND):
 				if(quad==5 or quad==7):
 					TIME_MOVE=6
@@ -357,6 +320,7 @@ def Calcpos():
 			
 		except Exception as e: 
 		
+			print("In except mode:")
 			#NO FOOD FOUND
 			firstp="[[  0 0]]"
 			LAST_FOOD_FOUND=LAST_FOOD_FOUND+1

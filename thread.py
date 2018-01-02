@@ -28,6 +28,8 @@ polygon = np.array([5, 136, 252], dtype=np.uint8) #Polygons --- RGB-118 141 252
 red_team = np.array([121, 172, 241], dtype=np.uint8) #Red Players --- RGB-241,78,84
 blue_team = np.array([24, 255, 225], dtype=np.uint8) #Blue players --- RGB-0,178,225
 
+
+
 OFFSET=60
 MOUSE_OFFSET_X=0
 MOUSE_OFFSET_Y=0
