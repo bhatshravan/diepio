@@ -79,7 +79,7 @@ if(TEST_MODE==True):
 	CENTER_X=367
 	CENTER_Y=387
 
-
+TARGET=(CENTER_X,CENTER_Y)
 
 #SOME FUNCTION INITIALIZATIONS--------------------------------------------------------------
 class POINT(Structure):
@@ -178,11 +178,16 @@ else:
 	team=0
 	enemy=red_team
 	print("Blue team")
-enemy=red_team
+enemy=blue_team
 
 
 if(screenWidth>1000):
 	Asplit=4
+	
+print (CENTER_X)
+print (CENTER_Y)
+pyautogui.moveTo(CENTER_X,CENTER_Y)
+time.sleep(10)
 #PROGRAM---------------------------------------------------------------------------------------
 def getBox():
 	global enemy
@@ -222,7 +227,9 @@ def getBox():
 		#SHOW OUTPUT,UNCOMMENT THIS TO ENABLE IT
 		finalmask=cv2.add(fmask1,fmask2)
 		if(TEST_MODE==True):
-			cv2.imshow('mask',mask)
+			mm=cv2.add(fmask1,fmask2)
+			mm2=cv2.add(mm,bgmask)
+			cv2.imshow('mask',mm2)
 		
 		
 		if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -245,123 +252,37 @@ def Calcpos():
 		iter=iter+1
 		yy=0
 		Asplit2=Asplit
+		
+		global coordborderlen
 		try:
-		
-			try:
-				firstps=coorden[0].astype(int)
-				PANIC_MODE=True
-				print("PANIC MODE!! RUNNING AWAY FROM ENEMY")
+			coordborderlen=len(coordborder)
+		except:
+			coordborderlen=0
+			
+		if coorden is not None:
+			firstps=coorden[0].astype(int)
+			PANIC_MODE=True
+			print("PANIC MODE!! RUNNING AWAY FROM ENEMY")
 					
-			except Exception as EE:
-				if(iter>10):
-					try:
-						firstps=coordborder[0].astype(int)
-						if(len(coordborder)>3000):
-							BORDER_FOUND=True
-							print("NEAR BORDER!! MOVING AWAY FROM THIS!!")
-					except:
-						firstps=coord[0].astype(int)
-					iter=0
-				else:
-					firstps=coord[0].astype(int)
-				
-				#firstps=coord[0].astype(int)
-				PANIC_MODE=False
-				
-			#Extract food cordinate value
-			print("Cordinates needed: {0}".format(firstps))
-			data=str(firstps[0]).replace("[", "").replace("]", "")
-			datalen=len(data)
-			if(datalen<8):
-				Asplit2=3
-			data=replace_str_index(data,Asplit2,',')
-			s3=data.split(",")
-			s4=s3[0].replace(" ","")
-			xx=int(s4)
-			s4=s3[1].replace(" ","")
-			yy=int(s4)
-			
-			
-			#Print coordinates to terminal
-			#print("Cordinates we get: {0},{1}".format(xx,yy))
-			pyautogui.moveTo(xx+OFFSETX, yy+OFFSETY)
-			pos = queryMousePosition()
-			print("Mouse position moved: {0}".format(pos))
-			#time.sleep(2)
-			
-			
-			#Square is found
-			LAST_FOOD_FOUND=0
-			
-			global quad
-			#Get last square found quadrant location
-			if(PANIC_MODE):
-				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS ABOVE
-					quad=7
-				elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS LEFT
-					quad=8
-				elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #ENEMY IS DOWN
-					quad=5
-				elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS RIGHT
-					quad=6
-				elif(xx>CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP RIGHT
-					quad=6
-				elif(xx<CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP LEFY
-					quad=8
-				elif(xx<CENTER_X and yy>CENTER_Y):								 #ENEMY IS DOWN LEFT
-					quad=8
-				else:								 							 #ENEMY IS DOWN RIGHT
-					quad=6
-			elif(BORDER_FOUND):
-				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS ABOVE
-					quad=7
-				elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS LEFT
-					quad=8
-				elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS DOWN
-					quad=5
-				else: #ENEMY IS RIGHT
-					quad=6
-				
-			else:
-				if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
-					quad=5
-				elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS LEFT
-					quad=6
-				elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #FOOD IS DOWN
-					quad=7
-				elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS RIGHT
-					quad=8
-				elif(xx>CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP RIGHT
-					quad=1
-				elif(xx<CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP LEFY
-					quad=2
-				elif(xx<CENTER_X and yy>CENTER_Y):								 #FOOD IS DOWN LEFT
-					quad=3
-				else:								 							 #FOOD IS DOWN RIGHT
-					quad=4
-			print("Found in quadrant {0}".format(quad))
-			
-			
-			if(PANIC_MODE==True):
-				TIME_MOVE=1
-				moveQuad()
-			elif(BORDER_FOUND):
-				if(quad==5 or quad==7):
-					TIME_MOVE=6
-				else:
-					TIME_MOVE=3
-				Thread(target = moveQuad).start()
-				BORDER_FOUND=False
-			else:
-				TIME_MOVE=0.2
-				Thread(target = moveQuad).start()
-			
-		except Exception as e: 
+		elif(iter>10 and coordborderlen>10000):
+			firstps=coordborder[coordborderlen-1000].astype(int)
+			BORDER_FOUND=True
+			print("NEAR BORDER!! MOVING AWAY FROM THIS!!")
+			iter=0
+			PANIC_MODE=False
+		elif coord is not None:
+			nearest_index=0
+			try:
+				distances = np.sqrt((coord[:,:,0] - TARGET[0]) ** 2 + (coord[:,:,1] - TARGET[1]) ** 2)
+				nearest_index = np.argmin(distances)
+			except:
+				nearest_index=0
+			firstps=coord[nearest_index].astype(int)
+			PANIC_MODE=False
+		else:
 		
-			#NO FOOD FOUND
-			firstp="[[  0 0]]"
 			LAST_FOOD_FOUND=LAST_FOOD_FOUND+1
-			print("Found in quadrant {0}".format(quad))
+			print("No FOOD,Last found in quadrant {0}".format(quad))
 				
 			#Since no food is found,move to random location
 			if(LAST_FOOD_FOUND>FIND_FOOD_LIMIT):
@@ -371,14 +292,112 @@ def Calcpos():
 				else:
 					TIME_MOVE=0.5
 				LAST_FOOD_FOUND=0
-			
 				
-			#MOVE TO NEAREST FOOD QUADRANT
-			
+			#MOVE TO NEAREST FOOD QUADRANT	
 			moveQuad()
+			continue
+		
+		print("Cordinates needed: {0}".format(firstps))
+		data=str(firstps[0]).replace("[", "").replace("]", "")
+		datalen=len(data)
+		
+		if(datalen<6):
+			Asplit2=2
+		
+		elif(datalen>6 and datalen<8):
+			Asplit2=3
+		
+		data=replace_str_index(data,Asplit2,',')
+		s3=data.split(",")
+		s4=s3[0].replace(" ","")
+		xx=int(s4)
+		s4=s3[1].replace(" ","")
+		yy=int(s4)	
+			
+		#Print coordinates to terminal
+		#print("Cordinates we get: {0},{1}".format(xx,yy))
+		pyautogui.moveTo(xx+OFFSETX, yy+OFFSETY)
+		pos = queryMousePosition()
+		print("Mouse position moved: {0}".format(pos))
+		
+		#time.sleep(2)
+		
+		
+		#Square is found
+		LAST_FOOD_FOUND=0
+		
+		global quad
+		#Get last square found quadrant location
+		if(PANIC_MODE):
+			if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS ABOVE
+				quad=7
+			elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS LEFT
+				quad=8
+			elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #ENEMY IS DOWN
+				quad=5
+			elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS RIGHT
+				quad=6
+			elif(xx>CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP RIGHT
+				quad=6
+			elif(xx<CENTER_X and yy<CENTER_Y):								 #ENEMY IS TOP LEFT
+				quad=8
+			elif(xx<CENTER_X and yy>CENTER_Y):								 #ENEMY IS DOWN LEFT
+				quad=8
+			else:								 							 #ENEMY IS DOWN RIGHT
+				quad=6
+				
+		elif(BORDER_FOUND):
+			if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS ABOVE
+				quad=7
+			elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #ENEMY IS LEFT
+				quad=8
+			elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #ENEMY IS DOWN
+				quad=5
+			else: #ENEMY IS RIGHT
+				quad=6
+			
+		else:
+			if(yy<CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET):  #FOOD IS ABOVE
+				quad=5
+			elif(xx<CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS LEFT
+				quad=6
+			elif(yy>CENTER_Y and xx<CENTER_X+OFFSET and xx>CENTER_X-OFFSET): #FOOD IS DOWN
+				quad=7
+			elif(xx>CENTER_X and yy<CENTER_Y+OFFSET and yy>CENTER_Y-OFFSET): #FOOD IS RIGHT
+				quad=8
+			elif(xx>CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP RIGHT
+				quad=1
+			elif(xx<CENTER_X and yy<CENTER_Y):								 #FOOD IS TOP LEFY
+				quad=2
+			elif(xx<CENTER_X and yy>CENTER_Y):								 #FOOD IS DOWN LEFT
+				quad=3
+			else:								 							 #FOOD IS DOWN RIGHT
+				quad=4
+		print("Found in quadrant {0}".format(quad))
+			
+			
+		if(PANIC_MODE==True):
+			TIME_MOVE=1
+			moveQuad()
+		elif(BORDER_FOUND):
+			if(quad==5 or quad==7):
+				TIME_MOVE=6
+			else:
+				TIME_MOVE=3
+			#Thread(target = moveQuad).start()
+			BORDER_FOUND=False
+		else:
+			if(xx<CENTER_X+30 and xx>CENTER_X-30 and yy<CENTER_Y+30 and yy>CENTER_Y-30):
+				print("Close,not moving")
+			else:
+				TIME_MOVE=0.1
+				Thread(target = moveQuad).start()
+			
+		
 			
 			
 if __name__ == '__main__':
 	Thread(target = getBox).start()
+	time.sleep(5)
 	Thread(target = Calcpos).start()
 	cv2.destroyAllWindows()

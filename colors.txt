@@ -1,3 +1,0 @@
-triangle = np.array([120, 136, 252], dtype=np.uint8) #RGB=252,118,119
-squares = np.array([95, 150, 255], dtype=np.uint8) #RGB=255,232,105
-polygon = np.array([5, 136, 252], dtype=np.uint8 #RGB-118 141 252
