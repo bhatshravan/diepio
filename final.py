@@ -1,7 +1,7 @@
 #DEFINE AND IMPORT ALL THINGS-----------------------------------------------------------------
 import threading
 from threading import Thread
-import win32api, win32con
+#import win32api, win32con
 import keyboard
 import pyautogui
 import time
@@ -11,7 +11,7 @@ import cv2
 import random
 from PIL import ImageGrab
 import numpy as np
-from ctypes import windll, Structure, c_long, byref
+#from ctypes import windll, Structure, c_long, byref
  
  
 #INITIALIZE SOME VALUES---------------------------------------------------------------------
@@ -85,6 +85,7 @@ if(TEST_MODE==True):
 TARGET=(CENTER_X,CENTER_Y)
 
 #SOME FUNCTION INITIALIZATIONS--------------------------------------------------------------
+"""
 class POINT(Structure):
     _fields_ = [("x", c_long), ("y", c_long)]
 def queryMousePosition():
@@ -94,7 +95,7 @@ def queryMousePosition():
     return { "x": pt.x, "y": pt.y}
 def replace_str_index(text,index=0,replacement=''):
     return '%s%s%s'%(text[:index],replacement,text[index+1:])
-	
+"""	
 
 def moveQuad():
 	quadpos=quad
