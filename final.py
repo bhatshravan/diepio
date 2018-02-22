@@ -42,12 +42,13 @@ FIND_FOOD_LIMIT=4
 FOOD_NEAR_OFFSET=200
 NEAR_BORDER_LIMIT=30000
 
-
+global coord
+coord=None
 global coorden
 global coordborder
 
 global enemy
-enemy=red_team
+enemy=blue_team
 
 global PANIC_MODE
 PANIC_MODE=False
@@ -56,7 +57,7 @@ global TIME_MOVE
 TIME_MOVE=0.1
 
 global TEST_MODE
-TEST_MODE=False
+TEST_MODE=True
 
 global BORDER_FOUND
 BORDER_FOUND=False
@@ -180,7 +181,7 @@ else:
 	team=0
 	enemy=red_team
 	print("Blue team")
-enemy=red_team
+#enemy=blue_team
 
 
 if(screenWidth>1000):
@@ -189,11 +190,13 @@ if(screenWidth>1000):
 print (CENTER_X)
 print (CENTER_Y)
 pyautogui.moveTo(CENTER_X,CENTER_Y)
+coorden = None
 #PROGRAM---------------------------------------------------------------------------------------
 def getBox():
 	global enemy
 	global runningg
 	global coorden
+	global coord
 	global coordborder
 	
 	while(True):
@@ -421,6 +424,6 @@ def Calcpos():
 			
 if __name__ == '__main__':
 	Thread(target = getBox).start()
-	time.sleep(2)
+	time.sleep(1)
 	Thread(target = Calcpos).start()
 	cv2.destroyAllWindows()
