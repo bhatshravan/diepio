@@ -2,7 +2,7 @@
 import threading
 from threading import Thread
 #import win32api, win32con
-import keyboard
+#import keyboard
 import pyautogui
 import time
 import cv2
@@ -57,7 +57,7 @@ global TIME_MOVE
 TIME_MOVE=0.1
 
 global TEST_MODE
-TEST_MODE=True
+TEST_MODE=False
 
 global BORDER_FOUND
 BORDER_FOUND=False
