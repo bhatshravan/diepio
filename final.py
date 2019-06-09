@@ -48,7 +48,7 @@ global coorden
 global coordborder
 
 global enemy
-enemy=blue_team
+enemy=red_team
 
 global PANIC_MODE
 PANIC_MODE=False
@@ -184,6 +184,7 @@ else:
 	print("Blue team")
 #enemy=blue_team
 
+enemy=red_team
 
 if(screenWidth>1000):
 	Asplit=4
@@ -425,6 +426,6 @@ def Calcpos():
 			
 if __name__ == '__main__':
 	Thread(target = getBox).start()
-	time.sleep(1)
+	time.sleep(3)
 	Thread(target = Calcpos).start()
 	cv2.destroyAllWindows()
