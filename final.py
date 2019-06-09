@@ -184,7 +184,7 @@ else:
 	print("Blue team")
 #enemy=blue_team
 
-enemy=red_team
+#enemy=red_team
 
 if(screenWidth>1000):
 	Asplit=4

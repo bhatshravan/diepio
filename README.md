@@ -21,6 +21,8 @@ This bot works by initially classifying the quadrant where the food is located a
 
 **INITIALLY PLEASE SET THE MODE TO AUTO_FIRE BY PRESSING E IN THE BROWSER FOR DIEP.IO**
 
+**ALSO IF WRONG ENEMY IS DETECTED, PLEASE SET VARIABLE enemy=red_team or enemy=blue_team on line 185**
+
 Run in command prompt or terminal -
 
 > python final.py
