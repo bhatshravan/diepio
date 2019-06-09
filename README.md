@@ -2,12 +2,14 @@
 
 # REQUIREMENTS
 
-Please use something like pip and install the following dependencies-
+-   Browser: Firefox preferably as I have tested it here although it will possibly work even in others.
+
+Please use something like pip and install the following dependencies -
 
 -   pyautogui
 -   numpy
--   PIL
--   OpenCv2
+-   pillow
+-   OpenCv2 (preferably pip package opencv-python although any opencv model will do)
 
 Also a size formatter such Sizer(Windows) can be used to help change sizes and debug any code
 
@@ -21,7 +23,7 @@ This bot works by initially classifying the quadrant where the food is located a
 
 Run in command prompt or terminal -
 
-python final.py
+> python final.py
 
 ### TEST MODES-
 
@@ -32,7 +34,7 @@ python final.py
 ### DETECTING TEAM
 
 -   This bot currently functions best in Sandbox mode, 2 Player and FFA modes very well.
--   It does have functionality to detect enemy team color but if it dosen't please set the enemy=red_team or enemy=blue_team before the _getBox()_ function
+-   It does have functionality to detect enemy team color but if it dosen't please set the enemy=red*team or enemy=blue_team before the \_getBox()* function
 
 ### WORKING
 
